@@ -8,8 +8,7 @@ import androidx.room.PrimaryKey;
 public class Node {
 
     @PrimaryKey(autoGenerate = true)
-    private String id;
-
+    private int id;
 
 
     private String title;
@@ -24,11 +23,16 @@ public class Node {
     }
 
     //setter for the id
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
     //getters for all other variable
+
+    public int getId() {
+        return id;
+    }
+
     public String getTitle() {
         return title;
     }
