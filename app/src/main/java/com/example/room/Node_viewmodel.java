@@ -29,7 +29,7 @@ public class Node_viewmodel extends AndroidViewModel {
     public void delete(Node node){
         repository.delete(node);
     }
-    public void deleteall(Node node){
+    public void deleteall(){
         repository.delete_all();
     }
     public LiveData<List<Node>> getAllNotes() {
