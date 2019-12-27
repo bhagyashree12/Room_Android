@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AnotherActivity extends AppCompatActivity {
     //name of intent string
+    public static final String EXTRA_ID =
+            "com.example.room.EXTRA_ID";
     public static final String EXTRA_TITLE =
             "com.example.room.EXTRA_TITLE";
     public static final String EXTRA_DESCRIPTION =
@@ -36,26 +38,44 @@ public class AnotherActivity extends AppCompatActivity {
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(10);
 
-        setTitle("Add Node");
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)) {
+            setTitle("edit note");
+            edit_title.setText(intent.getStringExtra(EXTRA_TITLE));
+            edit_description.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            numberPicker.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle("Add Node");
+        }
+
+
         //to show the back option
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
     }
-    private void saveNote(){
-        String title=edit_title.getText().toString();
-        String description=edit_description.getText().toString();
-        int priority=numberPicker.getValue();
+
+    private void saveNote() {
+        String title = edit_title.getText().toString();
+        String description = edit_description.getText().toString();
+        int priority = numberPicker.getValue();
 
         //to avoid accepting null string
-        if(title.trim().isEmpty() || description.trim().isEmpty()){
+        if (title.trim().isEmpty() || description.trim().isEmpty()) {
             return;
         }
 
 
-        Intent intent=new Intent();
+        Intent intent = new Intent();
         intent.putExtra(EXTRA_TITLE, title);
         intent.putExtra(EXTRA_DESCRIPTION, description);
         intent.putExtra(EXTRA_PRIORITY, priority);
+
+        //getting the id value from previous intent
+        int id =getIntent().getIntExtra(EXTRA_ID,-1);
+        //check whether default value is not null
+        if(id!=-1){
+            intent.putExtra(EXTRA_ID,id);
+        }
 
         //this is used to show whether input was successful or not
         setResult(RESULT_OK, intent);

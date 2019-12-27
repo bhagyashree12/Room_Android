@@ -23,7 +23,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static final int ADD_NOTE_REQUEST = 1;
-
+    public static final int EDIT_NOTE_REQUEST = 2;
     private Node_viewmodel viewmodel;
     private RecyclerView recyclerView;
 
@@ -53,13 +53,13 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(@Nullable List<Node> notes) {
                 //update RecyclerView
                 adapter.setNode(notes);
-                Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
+
             }
         });
 
 
         //adding swipe on the item
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -69,10 +69,23 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
                 viewmodel.delete(adapter.gettheposition(viewHolder.getAdapterPosition()));
-                Toast.makeText(MainActivity.this,"deleted",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "deleted", Toast.LENGTH_SHORT).show();
 
             }
         }).attachToRecyclerView(recyclerView);
+
+        adapter.onSetClickListner(new Node_Adapter.ItemClickListner() {
+            @Override
+            public void ItemClick(Node node) {
+                Intent intent = new Intent(MainActivity.this, AnotherActivity.class);
+                intent.putExtra(AnotherActivity.EXTRA_ID, node.getId());
+                intent.putExtra(AnotherActivity.EXTRA_TITLE, node.getTitle());
+                intent.putExtra(AnotherActivity.EXTRA_DESCRIPTION, node.getDescription());
+                intent.putExtra(AnotherActivity.EXTRA_PRIORITY, node.getPriority());
+                startActivityForResult(intent, EDIT_NOTE_REQUEST);
+
+            }
+        });
     }
 
     @Override
@@ -88,6 +101,25 @@ public class MainActivity extends AppCompatActivity {
             viewmodel.insert(note);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == EDIT_NOTE_REQUEST && resultCode == RESULT_OK) {
+
+            int id = data.getIntExtra(AnotherActivity.EXTRA_ID, -1);
+            if (id == -1) {
+                Toast.makeText(this, "Cannot update the value", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String title = data.getStringExtra(AnotherActivity.EXTRA_TITLE);
+            String description = data.getStringExtra(AnotherActivity.EXTRA_DESCRIPTION);
+            int priority = data.getIntExtra(AnotherActivity.EXTRA_PRIORITY, 1);
+
+
+            Node note = new Node(title, description, priority);
+            note.setId(id);
+            viewmodel.update(note);
+
+            Toast.makeText(this, "Note Updated", Toast.LENGTH_SHORT).show();
+
+
         } else {
             Toast.makeText(this, "Note not saved", Toast.LENGTH_SHORT).show();
         }
@@ -96,15 +128,15 @@ public class MainActivity extends AppCompatActivity {
     //menu options
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater=new MenuInflater(this);
-        inflater.inflate(R.menu.main_menu,menu);
+        MenuInflater inflater = new MenuInflater(this);
+        inflater.inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.main_menu:
                 viewmodel.deleteall();

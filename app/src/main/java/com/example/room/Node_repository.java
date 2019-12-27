@@ -67,6 +67,7 @@ public class Node_repository {
 
         }
     }
+
     private static class Updatenode extends AsyncTask<Node, Void, Void> {
 
         private Node_dao node_dao;
@@ -85,6 +86,7 @@ public class Node_repository {
 
         }
     }
+
     private static class Deletenode extends AsyncTask<Node, Void, Void> {
 
         private Node_dao node_dao;
@@ -103,6 +105,7 @@ public class Node_repository {
 
         }
     }
+
     private static class Deleteallnode extends AsyncTask<Node, Void, Void> {
 
         private Node_dao node_dao;
